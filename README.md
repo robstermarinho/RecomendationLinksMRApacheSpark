@@ -13,7 +13,7 @@ FriendRecommendationMR <project-path>/dataset.txt
 ```
 
 #### 2) File Result
-When the execution has finished, a file with, with the steps and result, is generated in the following folder path: 
+When the execution has finished, a file with the steps and results is generated in the path: 
 
 ```
 <project-path>/result_recommendation.txt
@@ -56,7 +56,7 @@ Regroup all possible friendships values in the same key(USER_ID):
    
    
 #### FINAL RESULT ################# 
-A line shows one USER_ID, one RECOMMENDATION and the set of common friends that allowed this recommendation.
+Each line shows one USER_ID, one RECOMMENDATION and the set of common friends that allowed this recommendation:
 
 	USER_ID=100	 RECOMMENDATION=700 (1: [300]) 
 	USER_ID=600	 RECOMMENDATION=400 (2: [100, 300]) 500 (1: [100]) 200 (2: [100, 300]) 700 (1: [300]) 
