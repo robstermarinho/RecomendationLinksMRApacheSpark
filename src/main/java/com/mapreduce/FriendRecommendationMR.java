@@ -25,8 +25,8 @@ public class FriendRecommendationMR {
 
     public static void main(String[] args) throws Exception {
         //If the path to the file is missing show error message with Usage
-        if (args.length < 1) {
-            System.err.println("Usage: FriendRecommendationMR <input-path>");
+        if (args.length < 2) {
+            System.err.println("Usage: FriendRecommendationMR <input-path> <output-path>");
             System.exit(1);
         }
 
@@ -40,6 +40,7 @@ public class FriendRecommendationMR {
 
         List<String> debug1 = records.collect();
 
+        PrintWriter writer_final = new PrintWriter(args[1], "UTF-8");
         PrintWriter writer = new PrintWriter("result_recommendation.txt", "UTF-8");
 
 
@@ -60,9 +61,20 @@ public class FriendRecommendationMR {
                 // DATA SET TEMPLATE: record=<user_id><TAB><friend1><,><friend2><,><friend3><,>...
 
                 String[] tokens = record.split("\t");
+                int record_size = tokens.length;
                 long user_id = Long.parseLong(tokens[0]);
-                String friendsAsString = tokens[1];
-                String[] friendsTokenized = friendsAsString.split(",");
+
+                String friendsAsString = "";
+
+                if (record_size > 1) {
+                    friendsAsString = tokens[1];
+                }
+
+                String[] friendsTokenized = {};
+
+                if (friendsAsString != "") {
+                    friendsTokenized = friendsAsString.split(",");
+                }
 
                 List<Long> friends = new ArrayList<Long>();
                 List<Tuple2<Long, Tuple2<Long, Long>>> mapperOutput = new ArrayList<Tuple2<Long, Tuple2<Long, Long>>>();
@@ -75,16 +87,20 @@ public class FriendRecommendationMR {
                     mapperOutput.add(T2(user_id, directFriend));
                 }
 
+
                 // Cross data and get all possible friends
-                for (int i = 0; i < friends.size(); i++) {
-                    for (int j = i + 1; j < friends.size(); j++) {
-                        // Possible friend 1
-                        Tuple2<Long, Long> possibleFriend1 = T2(friends.get(j), user_id);
-                        mapperOutput.add(T2(friends.get(i), possibleFriend1));
-                        // Possible friend 2
-                        Tuple2<Long, Long> possibleFriend2 = T2(friends.get(i), user_id);
-                        mapperOutput.add(T2(friends.get(j), possibleFriend2));
+                if (friends.size() > 0) {
+                    for (int i = 0; i < friends.size(); i++) {
+                        for (int j = i + 1; j < friends.size(); j++) {
+                            // Possible friend 1
+                            Tuple2<Long, Long> possibleFriend1 = T2(friends.get(j), user_id);
+                            mapperOutput.add(T2(friends.get(i), possibleFriend1));
+                            // Possible friend 2
+                            Tuple2<Long, Long> possibleFriend2 = T2(friends.get(i), user_id);
+                            mapperOutput.add(T2(friends.get(j), possibleFriend2));
+                        }
                     }
+
                 }
                 return mapperOutput.iterator();
             }
@@ -95,7 +111,7 @@ public class FriendRecommendationMR {
         System.out.println("PHASE 2 - Result of the MAPPER\n\n");
         writer.println("\n################################## PHASE 2 - Result of the MAPPER");
         writer.println("Showing All possible friendships. Those with -1 are direct friendship.\n");
-        //writer.println("HOW TO READ: USER_ID=<USER_ID> VALUE=(DIRECT_FRIEND,POSSIBLE_FRIEND)\n\n");
+        writer.println("HOW TO READ: USER_ID=<USER_ID> VALUE=(DIRECT_FRIEND,POSSIBLE_FRIEND)\n\n");
         List<Tuple2<Long, Tuple2<Long, Long>>> debug2 = pairs.collect();
         for (Tuple2<Long, Tuple2<Long, Long>> t2 : debug2) {
             System.out.println("\tUSER_ID=" + t2._1 + "\t VALUE=" + t2._2);
@@ -105,7 +121,7 @@ public class FriendRecommendationMR {
         JavaPairRDD<Long, Iterable<Tuple2<Long, Long>>> grouped = pairs.groupByKey();
 
 
-        // Start PHASE 2
+        // Start PHASE 3
         System.out.println("PHASE 3 - Regroup\n\n");
         writer.println("\n################################## PHASE 3 - Regroup\n");
 
@@ -158,10 +174,12 @@ public class FriendRecommendationMR {
         for (Tuple2<Long, String> t2 : debug4) {
             System.out.println("\tUSER_ID=" + t2._1 + "\t RECOMMENDATION=" + t2._2);
             writer.println("\tUSER_ID=" + t2._1 + "\t RECOMMENDATION=" + t2._2);
+            writer_final.println("USER_ID=" + t2._1 + "\t RECOMMENDATION=" + t2._2);
         }
 
         System.out.println("\n\nAuthor: Robert Marinho - robstermarinho@gmail.com");
         writer.close();
+        writer_final.close();
         sparkContext.close();
         System.exit(0);
     }

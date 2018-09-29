@@ -1,6 +1,7 @@
 ################################## PHASE 1 - Read Lines
 HOW TO READ: <USER_ID><TAB><RECOMMENDATION_1><,><RECOMMENDATION_2><,><RECOMMENDATION_3><,>...
 
+	USER_ID=800	
 	USER_ID=100	200,300,400,500,600
 	USER_ID=200	100,300
 	USER_ID=300	100,200,400,700,600
@@ -11,6 +12,9 @@ HOW TO READ: <USER_ID><TAB><RECOMMENDATION_1><,><RECOMMENDATION_2><,><RECOMMENDA
 
 ################################## PHASE 2 - Result of the MAPPER
 Showing All possible friendships. Those with -1 are direct friendship.
+
+HOW TO READ: USER_ID=<USER_ID> VALUE=(DIRECT_FRIEND,POSSIBLE_FRIEND)
+
 
 	USER_ID=100	 VALUE=(200,-1)
 	USER_ID=100	 VALUE=(300,-1)

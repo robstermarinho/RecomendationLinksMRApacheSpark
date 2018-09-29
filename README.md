@@ -6,10 +6,10 @@ This project has been managed by Maven and uses Apache Spark API
 
 #### 1) Usage
 This is the command to execute the application.
-The first argument is the path to the data set:
+The first argument is the input path. There is an example in the project folder: dataset.txt
 
 ```
-FriendRecommendationMR <project-path>/dataset.txt
+FriendRecommendationMR <input-path> <output-path>
 ```
 
 #### 2) File Result
@@ -18,6 +18,8 @@ When the execution has finished, a file with the steps and results is generated 
 ```
 <project-path>/result_recommendation.txt
 ```
+
+Also the final result is generated in the <output-path>.
 
 #### 2) Interpreting the File Result
 
